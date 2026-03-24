@@ -153,7 +153,6 @@ tr:hover td{background:rgba(255,255,255,.02);}
   <div class="fg"><label>Asignado</label><select id="fAsig"><option value="">Todos</option></select></div>
   <div class="fg"><label>Tipo Evento</label><select id="fEvento"><option value="">Todos</option></select></div>
   <div class="fg"><label>Estabilización</label><select id="fEstab"><option value="">Todos</option></select></div>
-  <div class="fg"><label>Iteration Path</label><select id="fIterPath"><option value="">Todos</option></select></div>
   <button class="btn-reset" onclick="resetFilters()">✕ Limpiar</button>
 </div>
 
@@ -458,18 +457,13 @@ function setMsg(t){document.getElementById('loadMsg').textContent=t;}
 // ─── FILTERS ─────────────────────────────────────────────────
 const FM=[['fEpic','Epic'],['fEstado','Estados'],['fSprint','Sprint'],
           ['fApp','Aplicación'],['fAsig','Asignado'],['fEvento','TipoEvento'],
-          ['fEstab','TipoEstab'],['fIterPath','IterPath']];
+          ['fEstab','TipoEstab']];
 
 function initFilters(){
   pop('fEpic','Epic'); pop('fEstado','Estados');
   pop('fSprint','Sprint',(a,b)=>(SORD[a]||0)-(SORD[b]||0));
   pop('fApp','Aplicación'); pop('fAsig','Asignado');
   pop('fEvento','TipoEvento'); pop('fEstab','TipoEstab');
-  // Iteration Path ordenado cronológicamente usando el mismo índice de sprint
-  pop('fIterPath','IterPath',(a,b)=>{
-    const sa=normSprint(a), sb=normSprint(b);
-    return (SORD[sa]||0)-(SORD[sb]||0);
-  });
   FM.forEach(([id])=>document.getElementById(id).addEventListener('change',applyFilters));
 }
 function pop(sid,key,sf){
