@@ -56,8 +56,8 @@ COL_WIDTHS = {
 }
 
 # Estilos del encabezado (segun archivo de referencia)
-HEADER_FILL  = PatternFill("solid", fgColor="106EBE")
-HEADER_FONT  = Font(bold=True, color="FFFFFF", size=9)
+HEADER_FILL  = PatternFill("solid", fgColor="FF106EBE")
+HEADER_FONT  = Font(bold=True, color="FFFFFFFF", size=9)
 HEADER_ALIGN = Alignment(horizontal="center", vertical="center", wrap_text=False)
 HEADER_BORDER = Border(right=Side(border_style="medium", color="FFFFFF"))
 
