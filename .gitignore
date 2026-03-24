@@ -1,0 +1,5 @@
+# Archivos temporales de Excel
+~$*
+
+# Archivos fuente de Azure DevOps (no necesitan estar en el repo)
+input/WAPSA Team - Epics*.xlsx

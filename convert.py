@@ -20,7 +20,8 @@ from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
 from openpyxl.utils import get_column_letter
 
 # ── Configuracion ──────────────────────────────────────────────────────────────
-DEFAULT_SOURCE = "WAPSA Team - Epics (5).xlsx"
+DEFAULT_SOURCE = "input/WAPSA Team - Epics (5).xlsx"
+INPUT_DIR      = "input"
 OUTPUT_FILE    = "data.xlsx"
 OUTPUT_SHEET   = "Hoja2"
 
@@ -73,7 +74,7 @@ def detect_source() -> Path:
         return p
 
     candidates = sorted(
-        Path(".").glob("WAPSA Team - Epics*.xlsx"),
+        Path(INPUT_DIR).glob("WAPSA Team - Epics*.xlsx"),
         key=lambda f: f.stat().st_mtime,
         reverse=True,
     )
@@ -84,7 +85,7 @@ def detect_source() -> Path:
     if not p.exists():
         sys.exit(
             f"[ERROR] No se encontro el archivo fuente.\n"
-            f"   Asegurate de que exista '{DEFAULT_SOURCE}' en esta carpeta\n"
+            f"   Coloca el archivo exportado de Azure DevOps en la carpeta '{INPUT_DIR}/'\n"
             f"   o pasalo como argumento:  python convert.py <archivo.xlsx>"
         )
     return p
@@ -167,7 +168,7 @@ def main():
     from openpyxl.styles.fills import PatternFill as PF
 
     output = Path(OUTPUT_FILE)
-    template = Path("Tickets - 23-03-2026 WAPSA.xlsx")
+    template = Path(INPUT_DIR) / "Tickets - 23-03-2026 WAPSA.xlsx"
 
     # Partir de la plantilla si existe, si no del output anterior
     base = template if template.exists() else (output if output.exists() else None)
