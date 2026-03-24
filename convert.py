@@ -162,37 +162,52 @@ def main():
 
     tickets = tickets[TARGET_COLS].reset_index(drop=True)
 
-    # ── Escribir con openpyxl para conservar otras hojas ─────────────────────
-    output = Path(OUTPUT_FILE)
+    # ── Usar el archivo de referencia como plantilla ──────────────────────────
+    import shutil, copy
+    from openpyxl.styles.fills import PatternFill as PF
 
-    if output.exists():
+    output = Path(OUTPUT_FILE)
+    template = Path("Tickets - 23-03-2026 WAPSA.xlsx")
+
+    # Partir de la plantilla si existe, si no del output anterior
+    base = template if template.exists() else (output if output.exists() else None)
+
+    if base:
+        shutil.copy2(base, output)
         wb = openpyxl.load_workbook(output)
-        if OUTPUT_SHEET in wb.sheetnames:
-            del wb[OUTPUT_SHEET]
-        ws = wb.create_sheet(OUTPUT_SHEET)
     else:
         wb = openpyxl.Workbook()
-        ws = wb.active
-        ws.title = OUTPUT_SHEET
 
-    # Escribir encabezados
+    # Asegurar que la hoja existe y limpiarla
+    if OUTPUT_SHEET in wb.sheetnames:
+        ws = wb[OUTPUT_SHEET]
+        # Borrar todas las filas de datos (dejar solo la fila 1 de encabezado)
+        for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
+            for cell in row:
+                cell.value = None
+    else:
+        ws = wb.create_sheet(OUTPUT_SHEET)
+
+    # Escribir encabezados (fila 1) con valores correctos y re-aplicar formato
     headers = list(tickets.columns)
     for col_idx, header in enumerate(headers, start=1):
-        # Restaurar acentos en los encabezados para que el dashboard los lea bien
         display = (header
                    .replace("Aplicacion", "Aplicaci\u00f3n")
                    .replace("Tipo Estabilizacion", "Tipo Estabilizaci\u00f3n"))
-        ws.cell(row=1, column=col_idx, value=display)
+        cell = ws.cell(row=1, column=col_idx, value=display)
+        cell.fill      = copy.copy(HEADER_FILL)
+        cell.font      = copy.copy(HEADER_FONT)
+        cell.alignment = copy.copy(HEADER_ALIGN)
+        cell.border    = copy.copy(HEADER_BORDER)
 
-    # Escribir datos
+    # Escribir datos desde fila 2
     for row_idx, row in enumerate(tickets.itertuples(index=False), start=2):
         for col_idx, value in enumerate(row, start=1):
-            # Convertir NaN a cadena vacia
             if isinstance(value, float) and pd.isna(value):
                 value = ""
             ws.cell(row=row_idx, column=col_idx, value=value)
 
-    # Aplicar formato visual
+    # Aplicar formato (anchos, auto-filter, alto encabezado)
     apply_formatting(ws, n_rows=len(tickets))
 
     wb.save(output)
